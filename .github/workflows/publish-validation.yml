@@ -1,0 +1,14 @@
+name: publish-validation
+run-name: Publish Validation
+
+on:
+  workflow_dispatch: {}
+  push: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Echo
+        run: echo "Published Validation Build."
