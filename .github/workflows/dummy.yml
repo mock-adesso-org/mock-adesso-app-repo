@@ -3,9 +3,6 @@ run-name: Dummy
 
 on:
   workflow_dispatch: {}
-  pull_request:
-    branches:
-      - dummy
 
 jobs:
   dummy:
