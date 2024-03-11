@@ -1,0 +1,16 @@
+name: dummy
+run-name: Dummy
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  dummy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Echo
+        run: echo "Dummy..."
