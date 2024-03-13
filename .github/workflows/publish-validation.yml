@@ -5,10 +5,55 @@ on:
   workflow_dispatch: {}
   push: {}
 
+env:
+  PLATFORM_TOOLS_VERSION: "35.0.0"
+  EMULATOR_VERSION: "34.1.19"
+
 jobs:
   publish:
     runs-on: ${{ vars.RUNNER }}
+    strategy:
+      fail-fast: false
 
     steps:
-      - name: Echo
-        run: echo "ANDROID_HOME = $ANDROID_HOME | env.ANDROID_HOME = ${{ env.ANDROID_HOME }}"
+      - name: Setup GitHub env variables
+        run:
+          echo "ANDROID_HOME=$(echo $ANDROID_HOME)" >> $GITHUB_ENV
+
+
+      - name: Print Environment variables
+        run: |
+          echo "ANDROID_HOME=${{ env.ANDROID_HOME }}"
+          echo "PLATFORM_TOOLS_VERSION=${{ env.PLATFORM_TOOLS_VERSION }}"
+          echo "EMULATOR_VERSION=${{ env.EMULATOR_VERSION }}"
+
+      - name: Android SDK Platform Tools Cache
+        uses: actions/cache@v4
+        id: sdk-platform-tools-cache
+        with:
+          path: ${{ env.ANDROID_HOME }}/platform-tools/*
+          key: sdk-platform-tools-${{ env.PLATFORM_TOOLS_VERSION }}
+
+      - name: Android SDK Emulator Tool Cache
+        uses: actions/cache@v4
+        id: sdk-emulator-tool-cache
+        with:
+          path: ${{ env.ANDROID_HOME }}/emulator/*
+          key: sdk-emulator-tool-${{ env.EMULATOR_VERSION }}
+
+      - name: List installed system images
+        run: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list_installed
+
+      - name: Setup Platform Tools
+        if: steps.sdk-platform-tools-cache.outputs.cache-hit != 'true'
+        run: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install platform-tools
+
+      - name: List Android devices
+        run: $ANDROID_HOME/platform-tools/adb devices
+
+      - name: Setup Emulator Tools
+        if: steps.sdk-emulator-tool-cache.outputs.cache-hit != 'true'
+        run: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install emulator
+
+      - name: List AVDs
+        run: $ANDROID_HOME/emulator/emulator -list-avds
