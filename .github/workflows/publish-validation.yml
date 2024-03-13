@@ -11,4 +11,4 @@ jobs:
 
     steps:
       - name: Echo
-        run: echo "Published Validation Build."
+        run: echo "ANDROID_HOME = $ANDROID_HOME | env.ANDROID_HOME = ${{ env.ANDROID_HOME }}"
